@@ -1,0 +1,42 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Git
+*.orig
+
+# Frontend
+tablet-site/node_modules/
+tablet-site/dist/
+tablet-site/.vite/
+
+# Frontend env files
+tablet-site/.env.local
+tablet-site/.env.*.local
+
+# Backend
+tablet-site-backend/.venv/
+tablet-site-backend/__pycache__/
+tablet-site-backend/.pytest_cache/
+tablet-site-backend/.mypy_cache/
+tablet-site-backend/.ruff_cache/
+
+# Python bytecode
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local build/test artifacts
+coverage/
+htmlcov/

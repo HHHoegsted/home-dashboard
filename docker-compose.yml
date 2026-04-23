@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  tablet-site-backend:
+    build:
+      context: ./tablet-site-backend
+    container_name: tablet-site-backend
+    ports:
+      - "8000:8000"
+    networks:
+      - home-dashboard
+    restart: unless-stopped
+
+  tablet-site:
+    build:
+      context: ./tablet-site
+    container_name: tablet-site
+    env_file:
+      - ./tablet-site/.env.docker
+    ports:
+      - "5173:5173"
+    depends_on:
+      - tablet-site-backend
+    networks:
+      - home-dashboard
+    restart: unless-stopped
+
+networks:
+  home-dashboard:
+    driver: bridge
