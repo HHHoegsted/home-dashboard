@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     weather_longitude: float = 11.967096034307996
     weather_location_name: str = "Hjemme"
 
+    mealie_base_url: str = "http://192.168.0.155:9925"
+    mealie_api_token: str = ""
+    mealie_household_slug: str = "home"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
