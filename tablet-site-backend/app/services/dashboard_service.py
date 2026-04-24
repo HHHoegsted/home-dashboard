@@ -6,23 +6,29 @@ from app.schemas import (
     Meal,
     Weather,
 )
+from app.services.weather_service import WeatherService
 
 
 class DashboardService:
+    def __init__(self) -> None:
+        self.weather_service = WeatherService()
+
     def get_dashboard(self) -> DashboardResponse:
+        weather_snapshot = self.weather_service.get_weather()
+
         return DashboardResponse(
             now=DashboardNow(
                 time="18:42",
                 dateLabel="torsdag · 23. april",
             ),
             weather=Weather(
-                location="Hjemme",
-                tempC=12,
-                condition="Skyet med let vind",
-                highC=14,
-                lowC=7,
-                rainChance=28,
-                updatedAt="18:30",
+                location=weather_snapshot.location,
+                tempC=weather_snapshot.temp_c,
+                condition=weather_snapshot.condition,
+                highC=weather_snapshot.high_c,
+                lowC=weather_snapshot.low_c,
+                rainChance=weather_snapshot.rain_chance,
+                updatedAt=weather_snapshot.updated_at,
             ),
             meal=Meal(
                 title="Boller i karry med ris",
@@ -93,8 +99,8 @@ class DashboardService:
             ],
             household=[
                 HouseholdMetric(id=1, label="Inde", value="21,4°C"),
-                HouseholdMetric(id=2, label="Ude", value="12°C"),
-                HouseholdMetric(id=3, label="Regn", value="28%"),
+                HouseholdMetric(id=2, label="Ude", value=f"{weather_snapshot.temp_c}°C"),
+                HouseholdMetric(id=3, label="Regn", value=f"{weather_snapshot.rain_chance}%"),
                 HouseholdMetric(id=4, label="Næste", value="17:00"),
             ],
         )
