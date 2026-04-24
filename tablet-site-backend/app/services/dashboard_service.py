@@ -6,15 +6,18 @@ from app.schemas import (
     Meal,
     Weather,
 )
+from app.services.mealie_service import MealieService
 from app.services.weather_service import WeatherService
 
 
 class DashboardService:
     def __init__(self) -> None:
         self.weather_service = WeatherService()
+        self.mealie_service = MealieService()
 
     def get_dashboard(self) -> DashboardResponse:
         weather_snapshot = self.weather_service.get_weather()
+        today_meal = self.mealie_service.get_today_meal()
 
         return DashboardResponse(
             now=DashboardNow(
@@ -31,11 +34,11 @@ class DashboardService:
                 updatedAt=weather_snapshot.updated_at,
             ),
             meal=Meal(
-                title="Boller i karry med ris",
-                mealType="Aftensmad",
-                servings=4,
-                source="Mealie",
-                image="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80",
+                title=today_meal.title,
+                mealType=today_meal.meal_type,
+                servings=today_meal.servings,
+                source=today_meal.source,
+                image=today_meal.image,
             ),
             eventsToday=[
                 CalendarEvent(
