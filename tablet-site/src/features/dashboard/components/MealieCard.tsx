@@ -6,6 +6,7 @@ import SectionTitle from "./SectionTitle";
 
 type MealieCardProps = {
   data: DashboardData;
+  onOpen: () => void;
 };
 
 function formatMealType(mealType: string): string {
@@ -13,17 +14,27 @@ function formatMealType(mealType: string): string {
     breakfast: "Morgenmad",
     lunch: "Frokost",
     dinner: "Aftensmad",
-    side: "Tilbehør",
   };
 
   return mealTypes[mealType.toLowerCase()] ?? mealType;
 }
 
-export default function MealieCard({ data }: MealieCardProps) {
+export default function MealieCard({ data, onOpen }: MealieCardProps) {
   const hasImage = data.meal.image.trim().length > 0;
 
   return (
-    <Card className="h-full">
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      className="h-full cursor-pointer transition hover:border-white/25 hover:bg-white/[0.07]"
+    >
       <CardHeader>
         <SectionTitle
           icon={UtensilsCrossed}
@@ -60,6 +71,10 @@ export default function MealieCard({ data }: MealieCardProps) {
           <div className="rounded-xl bg-white/10 px-3 py-1 text-sm text-white">
             {formatMealType(data.meal.mealType)}
           </div>
+        </div>
+
+        <div className="mt-4 text-sm text-white/45">
+          Tryk for at se flere måltider.
         </div>
       </CardContent>
     </Card>
