@@ -11,6 +11,7 @@ class DashboardResponse(BaseModel):
     now: DashboardNow
     weather: Weather
     meal: Meal
+    upcomingMeals: list[Meal]
     eventsToday: list[CalendarEvent]
     upcoming: list[CalendarEvent]
     household: list[HouseholdMetric]

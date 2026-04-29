@@ -10,6 +10,7 @@ export type Meal = {
   servings: number;
   source: string;
   image: string;
+  date?: string | null;
 };
 
 export type Weather = {
@@ -41,6 +42,7 @@ export type DashboardData = {
   now: DashboardNow;
   weather: Weather;
   meal: Meal;
+  upcomingMeals: Meal[];
   eventsToday: CalendarEvent[];
   upcoming: CalendarEvent[];
   household: HouseholdMetric[];

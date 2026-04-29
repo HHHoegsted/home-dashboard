@@ -16,12 +16,42 @@ export const demoData: DashboardData = {
   },
   meal: {
     title: "Boller i karry med ris",
-    mealType: "Aftensmad",
+    mealType: "dinner",
     servings: 4,
     source: "Mealie",
     image:
       "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80",
+    date: "2026-04-23",
   },
+  upcomingMeals: [
+    {
+      title: "Boller i karry med ris",
+      mealType: "dinner",
+      servings: 4,
+      source: "Mealie",
+      image:
+        "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80",
+      date: "2026-04-23",
+    },
+    {
+      title: "Lasagne med salat",
+      mealType: "dinner",
+      servings: 4,
+      source: "Mealie",
+      image:
+        "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=1200&q=80",
+      date: "2026-04-24",
+    },
+    {
+      title: "Kylling i karry",
+      mealType: "dinner",
+      servings: 4,
+      source: "Mealie",
+      image:
+        "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=1200&q=80",
+      date: "2026-04-25",
+    },
+  ],
   eventsToday: [
     {
       id: 1,
