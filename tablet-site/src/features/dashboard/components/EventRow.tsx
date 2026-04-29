@@ -10,48 +10,38 @@ type EventRowProps = {
 };
 
 type EventColorTheme = {
-  border: string;
   background: string;
   highlightBackground: string;
   badgeBackground: string;
   badgeText: string;
-  rail: string;
 };
 
 const DEFAULT_THEME: EventColorTheme = {
-  border: "border-white/10",
   background: "bg-white/5",
   highlightBackground: "bg-white/10",
   badgeBackground: "bg-white/10",
   badgeText: "text-white/80",
-  rail: "bg-white/35",
 };
 
 const HH_THEME: EventColorTheme = {
-  border: "border-cyan-300/45",
-  background: "bg-cyan-300/10",
-  highlightBackground: "bg-cyan-300/22",
-  badgeBackground: "bg-cyan-300/22",
-  badgeText: "text-cyan-50",
-  rail: "bg-cyan-300",
+  background: "bg-blue-500/30",
+  highlightBackground: "bg-blue-500/40",
+  badgeBackground: "bg-blue-500/40",
+  badgeText: "text-blue-50",
 };
 
 const CHARLIE_THEME: EventColorTheme = {
-  border: "border-lime-300/45",
-  background: "bg-lime-300/10",
-  highlightBackground: "bg-lime-300/22",
-  badgeBackground: "bg-lime-300/22",
-  badgeText: "text-lime-50",
-  rail: "bg-lime-300",
+  background: "bg-green-500/30",
+  highlightBackground: "bg-green-500/40",
+  badgeBackground: "bg-green-500/40",
+  badgeText: "text-green-50",
 };
 
 const SARA_THEME: EventColorTheme = {
-  border: "border-amber-300/50",
-  background: "bg-amber-300/12",
-  highlightBackground: "bg-amber-300/24",
-  badgeBackground: "bg-amber-300/24",
-  badgeText: "text-amber-50",
-  rail: "bg-amber-300",
+  background: "bg-pink-500/30",
+  highlightBackground: "bg-pink-500/40",
+  badgeBackground: "bg-pink-500/40",
+  badgeText: "text-pink-50",
 };
 
 function getEventTheme(source: string | undefined): EventColorTheme {
@@ -101,14 +91,11 @@ export default function EventRow({
   return (
     <div
       className={cn(
-        "relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border px-4 py-3 pl-6",
+        "flex items-center justify-between gap-3 rounded-2xl px-4 py-3",
         compact ? "" : "min-h-[76px]",
-        theme.border,
         highlight ? theme.highlightBackground : theme.background
       )}
     >
-      <div className={cn("absolute bottom-0 left-0 top-0 w-1.5", theme.rail)} />
-
       <div className="min-w-0">
         <div className="truncate text-base font-medium text-white">
           {event.title}
