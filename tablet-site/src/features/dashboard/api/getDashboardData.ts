@@ -6,10 +6,10 @@ if (!apiBaseUrl) {
   throw new Error("VITE_API_BASE_URL is not configured.");
 }
 
-const DASHBOARD_API_URL = `${apiBaseUrl}/api/dashboard`;
-
 export async function getDashboardData(): Promise<DashboardData> {
-  const response = await fetch(DASHBOARD_API_URL, {
+  const dashboardApiUrl = `${apiBaseUrl}/api/dashboard`;
+
+  const response = await fetch(dashboardApiUrl, {
     method: "GET",
     headers: {
       Accept: "application/json",
