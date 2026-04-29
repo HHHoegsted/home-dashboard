@@ -3,15 +3,18 @@ import { useEffect, useMemo, useState } from "react";
 import type { DashboardData } from "../../types/dashboard";
 import { loadDashboardData } from "./api/loadDashboardData";
 import CalendarCard from "./components/CalendarCard";
+import CalendarPage from "./components/CalendarPage";
 import DashboardErrorState from "./components/DashboardErrorState";
 import DashboardLoadingState from "./components/DashboardLoadingState";
 import HeroCard from "./components/HeroCard";
 import MealieCard from "./components/MealieCard";
 import WeatherCard from "./components/WeatherCard";
 
+type DashboardView = "dashboard" | "calendar";
+
 export default function HomeTabletDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [mode, setMode] = useState("today");
+  const [view, setView] = useState<DashboardView>("dashboard");
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -113,6 +116,10 @@ export default function HomeTabletDashboard() {
     return <DashboardErrorState message={errorMessage ?? undefined} />;
   }
 
+  if (view === "calendar") {
+    return <CalendarPage data={data} onBack={() => setView("dashboard")} />;
+  }
+
   return (
     <div className="min-h-screen text-white">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-4 p-4 md:p-6 lg:p-8">
@@ -122,7 +129,7 @@ export default function HomeTabletDashboard() {
           </div>
         ) : null}
 
-        <header className="grid items-stretch grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
+        <header className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1.5fr_1fr]">
           <HeroCard greeting={greeting} data={data} />
           <WeatherCard
             data={data}
@@ -131,8 +138,8 @@ export default function HomeTabletDashboard() {
           />
         </header>
 
-        <div className="grid items-stretch grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
-          <CalendarCard data={data} mode={mode} onModeChange={setMode} />
+        <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1.5fr_1fr]">
+          <CalendarCard data={data} onOpen={() => setView("calendar")} />
           <MealieCard data={data} />
         </div>
       </div>

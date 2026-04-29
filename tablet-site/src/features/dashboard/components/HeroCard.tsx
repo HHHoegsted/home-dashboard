@@ -1,4 +1,4 @@
-import { Home, UtensilsCrossed } from "lucide-react";
+import { Home, ImageOff, UtensilsCrossed } from "lucide-react";
 
 import { Card, CardContent } from "../../../components/ui/card";
 import type { DashboardData } from "../../../types/dashboard";
@@ -9,7 +9,20 @@ type HeroCardProps = {
   data: DashboardData;
 };
 
+function formatMealType(mealType: string): string {
+  const mealTypes: Record<string, string> = {
+    breakfast: "Morgenmad",
+    lunch: "Frokost",
+    dinner: "Aftensmad",
+    side: "Tilbehør",
+  };
+
+  return mealTypes[mealType.toLowerCase()] ?? mealType;
+}
+
 export default function HeroCard({ greeting, data }: HeroCardProps) {
+  const hasImage = data.meal.image.trim().length > 0;
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="relative p-0">
@@ -46,11 +59,18 @@ export default function HeroCard({ greeting, data }: HeroCardProps) {
           </div>
 
           <div className="relative min-h-[260px] overflow-hidden">
-            <img
-              src={data.meal.image}
-              alt={data.meal.title}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            {hasImage ? (
+              <img
+                src={data.meal.image}
+                alt={data.meal.title}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/20 text-white/55">
+                <ImageOff className="h-8 w-8" />
+                <span className="text-sm">Intet billede fra Mealie</span>
+              </div>
+            )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
 
@@ -68,11 +88,9 @@ export default function HeroCard({ greeting, data }: HeroCardProps) {
 
               <div className="mt-2 flex flex-wrap gap-2">
                 <div className="rounded-xl bg-white/15 px-3 py-1 text-sm text-white">
-                  {data.meal.mealType}
+                  {formatMealType(data.meal.mealType)}
                 </div>
-                <div className="rounded-xl bg-white/15 px-3 py-1 text-sm text-white">
-                  {data.meal.servings} personer
-                </div>
+
                 <div className="rounded-xl bg-white/15 px-3 py-1 text-sm text-white">
                   {data.meal.source}
                 </div>
