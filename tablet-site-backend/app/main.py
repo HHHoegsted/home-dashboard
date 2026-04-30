@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import dashboard_router
+from app.routes import dashboard_router, hero_image_router
 
 
 app = FastAPI(
@@ -23,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(dashboard_router)
+app.include_router(hero_image_router)
 
 
 @app.get("/")

@@ -31,6 +31,11 @@ class Settings(BaseSettings):
 
     icloud_calendar_lookahead_days: int = 30
 
+    hero_image_directory: str = "app/assets/hero-images"
+    hero_image_birthdays: str = ""
+    hero_image_upload_password: str = ""
+    hero_image_upload_max_mb: int = 20
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

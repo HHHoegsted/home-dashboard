@@ -1,33 +1,66 @@
-import { Home, ImageOff, UtensilsCrossed } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Home, ImageOff } from "lucide-react";
 
 import { Card, CardContent } from "../../../components/ui/card";
+import { getApiBaseUrl } from "../../../lib/apiBaseUrl";
 import type { DashboardData } from "../../../types/dashboard";
-import MetricPill from "./MetricPill";
 
 type HeroCardProps = {
   greeting: string;
   data: DashboardData;
 };
 
-function formatMealType(mealType: string): string {
-  const mealTypes: Record<string, string> = {
-    breakfast: "Morgenmad",
-    lunch: "Frokost",
-    dinner: "Aftensmad",
-    side: "Tilbehør",
-  };
+type HeroImageMeta = {
+  label: string;
+  reason: string;
+};
 
-  return mealTypes[mealType.toLowerCase()] ?? mealType;
+function getHeroImageUrl(): string | null {
+  try {
+    return `${getApiBaseUrl()}/api/hero-image`;
+  } catch {
+    return null;
+  }
+}
+
+function getHeroImageMetaUrl(): string | null {
+  try {
+    return `${getApiBaseUrl()}/api/hero-image/meta`;
+  } catch {
+    return null;
+  }
 }
 
 export default function HeroCard({ greeting, data }: HeroCardProps) {
-  const hasImage = data.meal.image.trim().length > 0;
+  const heroImageUrl = getHeroImageUrl();
+  const [heroImageMeta, setHeroImageMeta] = useState<HeroImageMeta | null>(
+    null
+  );
+
+  useEffect(() => {
+    const metaUrl = getHeroImageMetaUrl();
+
+    if (!metaUrl) {
+      return;
+    }
+
+    fetch(metaUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch hero image metadata.");
+        }
+
+        return response.json() as Promise<HeroImageMeta>;
+      })
+      .then(setHeroImageMeta)
+      .catch(() => setHeroImageMeta(null));
+  }, [data.now.dateLabel]);
 
   return (
     <Card className="overflow-hidden">
       <CardContent className="relative p-0">
         <div className="grid min-h-[280px] grid-cols-1 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="flex flex-col justify-between p-6 md:p-8">
+          <div className="flex min-h-[280px] flex-col justify-center p-6 md:p-8">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.22em] text-white/70">
                 <Home className="h-4 w-4" />
@@ -46,56 +79,31 @@ export default function HeroCard({ greeting, data }: HeroCardProps) {
                 {data.now.time}
               </div>
             </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-              {data.household.map((item) => (
-                <MetricPill
-                  key={item.id}
-                  label={item.label}
-                  value={item.value}
-                />
-              ))}
-            </div>
           </div>
 
           <div className="relative min-h-[260px] overflow-hidden">
-            {hasImage ? (
+            {heroImageUrl ? (
               <img
-                src={data.meal.image}
-                alt={data.meal.title}
+                src={heroImageUrl}
+                alt="Udvalgt familiebillede"
                 className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/20 text-white/55">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_30%_20%,rgba(20,184,166,0.35),transparent_32%),radial-gradient(circle_at_70%_70%,rgba(59,130,246,0.35),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.85))] text-white/55">
                 <ImageOff className="h-8 w-8" />
-                <span className="text-sm">Intet billede fra Mealie</span>
+                <span className="text-sm">Intet hero-billede valgt</span>
               </div>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
 
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <div className="flex items-center gap-2 text-white/75">
-                <UtensilsCrossed className="h-4 w-4" />
-                <span className="text-sm uppercase tracking-[0.18em]">
-                  Dagens ret
-                </span>
-              </div>
-
-              <div className="mt-2 text-2xl font-semibold leading-tight text-white drop-shadow-md">
-                {data.meal.title}
-              </div>
-
-              <div className="mt-2 flex flex-wrap gap-2">
-                <div className="rounded-xl bg-white/15 px-3 py-1 text-sm text-white">
-                  {formatMealType(data.meal.mealType)}
-                </div>
-
-                <div className="rounded-xl bg-white/15 px-3 py-1 text-sm text-white">
-                  {data.meal.source}
+            {heroImageMeta?.reason === "birthday" ? (
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="inline-flex max-w-full rounded-2xl bg-black/45 px-4 py-2 text-xl font-semibold tracking-tight text-white shadow-2xl backdrop-blur-md md:text-2xl">
+                  {heroImageMeta.label}
                 </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </CardContent>
