@@ -11,7 +11,7 @@ from app.schemas import (
     Weather,
 )
 from app.services.calendar_service import CalendarService
-from app.services.mealie_service import MealieService
+from app.services.mealie_service import MealieMeal, MealieService
 from app.services.weather_service import WeatherService
 
 
@@ -25,6 +25,7 @@ class DashboardService:
         now = datetime.now(ZoneInfo("Europe/Copenhagen"))
         weather_snapshot = self.weather_service.get_weather()
         today_meal = self.mealie_service.get_today_meal()
+        upcoming_meals = self.mealie_service.get_upcoming_meals()
         calendar_snapshot = self.calendar_service.get_calendar_snapshot()
 
         next_event = (
@@ -49,13 +50,11 @@ class DashboardService:
                 rainChance=weather_snapshot.rain_chance,
                 updatedAt=weather_snapshot.updated_at,
             ),
-            meal=Meal(
-                title=today_meal.title,
-                mealType=today_meal.meal_type,
-                servings=today_meal.servings,
-                source=today_meal.source,
-                image=today_meal.image,
-            ),
+            meal=self._to_meal_schema(today_meal),
+            upcomingMeals=[
+                self._to_meal_schema(meal)
+                for meal in upcoming_meals
+            ],
             eventsToday=calendar_snapshot.events_today,
             upcoming=calendar_snapshot.upcoming,
             household=[
@@ -68,6 +67,17 @@ class DashboardService:
                     value=next_event.start if next_event else "Ingen",
                 ),
             ],
+        )
+
+    @staticmethod
+    def _to_meal_schema(meal: MealieMeal) -> Meal:
+        return Meal(
+            title=meal.title,
+            mealType=meal.meal_type,
+            servings=meal.servings,
+            source=meal.source,
+            image=meal.image,
+            date=meal.date,
         )
 
     @staticmethod

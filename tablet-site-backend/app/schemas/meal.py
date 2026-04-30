@@ -7,3 +7,4 @@ class Meal(BaseModel):
     servings: int
     source: str
     image: str
+    date: str | None = None

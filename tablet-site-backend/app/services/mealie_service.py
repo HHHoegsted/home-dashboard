@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, timedelta
 
 import httpx
 
@@ -14,6 +15,7 @@ class MealieMeal:
     servings: int
     source: str
     image: str
+    date: str | None = None
 
 
 class MealieService:
@@ -32,17 +34,34 @@ class MealieService:
         if not planner_item:
             return self._no_meal_planned()
 
-        recipe = self._extract_recipe(planner_item)
-        recipe_id = self._extract_recipe_id(planner_item, recipe)
-        recipe_name = self._extract_recipe_name(planner_item, recipe)
+        return self._to_mealie_meal(planner_item)
 
-        return MealieMeal(
-            title=recipe_name,
-            meal_type=self._extract_meal_type(planner_item),
-            servings=self._extract_servings(recipe),
-            source="Mealie",
-            image=self._get_recipe_image_url(recipe_id) if recipe_id else "",
-        )
+    def get_upcoming_meals(self) -> list[MealieMeal]:
+        if not self.settings.mealie_api_token:
+            return []
+
+        today = date.today()
+        range_end = today + timedelta(days=30)
+
+        try:
+            planner_items = self._get_planner_items(today, range_end)
+        except httpx.HTTPError:
+            return []
+
+        meals = [self._to_mealie_meal(item) for item in planner_items]
+        meals = [
+            meal
+            for meal in meals
+            if meal.title
+            and meal.title not in {
+                "Ukendt ret",
+                "Mealie mangler API-token",
+                "Ingen madplan i dag",
+                "Mealie kunne ikke hentes",
+            }
+        ]
+
+        return meals[:8]
 
     def _get_today_planner_item(self) -> dict | None:
         with httpx.Client(
@@ -64,6 +83,75 @@ class MealieService:
             return payload
 
         return None
+
+    def _get_planner_items(
+        self,
+        range_start: date,
+        range_end: date,
+    ) -> list[dict]:
+        with httpx.Client(
+            base_url=self.settings.mealie_base_url,
+            headers=self._headers,
+            timeout=10.0,
+        ) as client:
+            response = client.get(
+                "/api/households/mealplans",
+                params={
+                    "start_date": range_start.isoformat(),
+                    "end_date": range_end.isoformat(),
+                },
+            )
+            response.raise_for_status()
+            payload = response.json()
+
+        if isinstance(payload, dict) and isinstance(payload.get("items"), list):
+            return [
+                item
+                for item in payload["items"]
+                if isinstance(item, dict)
+            ]
+
+        if isinstance(payload, list):
+            return [
+                item
+                for item in payload
+                if isinstance(item, dict)
+            ]
+
+        return []
+
+    def _to_mealie_meal(self, planner_item: dict) -> MealieMeal:
+        recipe = self._extract_recipe(planner_item)
+        recipe_id = self._extract_recipe_id(planner_item, recipe)
+
+        if not recipe and recipe_id:
+            recipe = self._get_recipe(recipe_id)
+
+        recipe_name = self._extract_recipe_name(planner_item, recipe)
+
+        return MealieMeal(
+            title=recipe_name,
+            meal_type=self._extract_meal_type(planner_item),
+            servings=self._extract_servings(recipe),
+            source="Mealie",
+            image=self._get_recipe_image_url(recipe_id) if recipe_id else "",
+            date=self._extract_date(planner_item),
+        )
+
+    def _get_recipe(self, recipe_id: str) -> dict:
+        try:
+            with httpx.Client(
+                base_url=self.settings.mealie_base_url,
+                headers=self._headers,
+                timeout=10.0,
+            ) as client:
+                response = client.get(f"/api/recipes/{recipe_id}")
+                response.raise_for_status()
+                recipe = response.json()
+        except httpx.HTTPError:
+            return {}
+
+        return recipe if isinstance(recipe, dict) else {}
 
     def _extract_recipe(self, planner_item: dict) -> dict:
         recipe = planner_item.get("recipe")
@@ -111,6 +199,14 @@ class MealieService:
             return str(entry_type)
 
         return "Aftensmad"
+
+    def _extract_date(self, planner_item: dict) -> str | None:
+        meal_date = planner_item.get("date")
+
+        if not meal_date:
+            return None
+
+        return str(meal_date)
 
     def _get_recipe_image_url(self, recipe_id: str) -> str:
         return (

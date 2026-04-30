@@ -7,10 +7,11 @@ import CalendarPage from "./components/CalendarPage";
 import DashboardErrorState from "./components/DashboardErrorState";
 import DashboardLoadingState from "./components/DashboardLoadingState";
 import HeroCard from "./components/HeroCard";
+import MealPage from "./components/MealPage";
 import MealieCard from "./components/MealieCard";
 import WeatherCard from "./components/WeatherCard";
 
-type DashboardView = "dashboard" | "calendar";
+type DashboardView = "dashboard" | "calendar" | "meal";
 
 export default function HomeTabletDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -52,6 +53,8 @@ export default function HomeTabletDashboard() {
       const result = await loadDashboardData();
       setData(result.data);
       setErrorMessage(result.errorMessage);
+
+      return result.data;
     } finally {
       if (!silent) {
         setLoading(false);
@@ -108,6 +111,16 @@ export default function HomeTabletDashboard() {
     await fetchDashboardData();
   }
 
+  async function openCalendarPage() {
+    await fetchDashboardData({ silent: true });
+    setView("calendar");
+  }
+
+  async function openMealPage() {
+    await fetchDashboardData({ silent: true });
+    setView("meal");
+  }
+
   if (initialLoading && !data) {
     return <DashboardLoadingState />;
   }
@@ -118,6 +131,10 @@ export default function HomeTabletDashboard() {
 
   if (view === "calendar") {
     return <CalendarPage data={data} onBack={() => setView("dashboard")} />;
+  }
+
+  if (view === "meal") {
+    return <MealPage data={data} onBack={() => setView("dashboard")} />;
   }
 
   return (
@@ -139,8 +156,8 @@ export default function HomeTabletDashboard() {
         </header>
 
         <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1.5fr_1fr]">
-          <CalendarCard data={data} onOpen={() => setView("calendar")} />
-          <MealieCard data={data} />
+          <CalendarCard data={data} onOpen={openCalendarPage} />
+          <MealieCard data={data} onOpen={openMealPage} />
         </div>
       </div>
     </div>
