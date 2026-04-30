@@ -6,7 +6,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./tablet-site-backend/app/assets/hero-images:/app/app/assets/hero-images
+      - ./tablet-site-backend/app/assets/hero-images:/app/app/assets/hero-images:z
     ports:
       - "8010:8000"
     networks:
