@@ -15,6 +15,7 @@ tablet-site/dist/
 tablet-site/.vite/
 
 # Frontend env files
+.env
 tablet-site/.env.local
 tablet-site/.env.*.local
 
