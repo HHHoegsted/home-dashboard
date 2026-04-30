@@ -16,6 +16,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://192.168.0.155:5173",
         "http://100.90.248.19:5173",
+        "http://fedora-laptop.jackal-pain.ts.net:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],

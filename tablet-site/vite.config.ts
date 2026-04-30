@@ -16,6 +16,7 @@ export default defineConfig({
       "localhost",
       "127.0.0.1",
       "192.168.0.155",
+      "100.90.248.19",
       "fedora-laptop.jackal-pain.ts.net",
     ],
   },
