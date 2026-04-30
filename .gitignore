@@ -13,8 +13,10 @@ Thumbs.db
 tablet-site/node_modules/
 tablet-site/dist/
 tablet-site/.vite/
+tablet-site/*.tsbuildinfo
 
 # Frontend env files
+.env
 tablet-site/.env.local
 tablet-site/.env.*.local
 
